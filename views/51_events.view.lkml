@@ -45,7 +45,7 @@ view: events {
   dimension: is_exit_event {
     type: yesno
     label: "UTM Source"
-    sql: ${sequence_number} = ${sessions.number_of_events_in_session} ;;
+    sql: ${sequence_number} = 2 ;; #hardcoded
     description: "Yes indicates this was the exit point / bounce page of the session"
   }
 

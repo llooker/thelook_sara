@@ -1,20 +1,21 @@
 include: "/models/**/thelook.model.lkml"
+
 view: order_facts {
-  derived_table: {
-    explore_source: order_items {
-      column: order_id {field: order_items.order_id_no_actions }
-      column: items_in_order { field: order_items.count }
-      column: order_amount { field: order_items.total_sale_price }
-      column: order_cost { field: inventory_items.total_cost }
-      column: user_id {field: order_items.user_id }
-      column: created_at {field: order_items.created_raw}
-      column: order_gross_margin {field: order_items.total_gross_margin}
-      derived_column: order_sequence_number {
-        sql: RANK() OVER (PARTITION BY user_id ORDER BY created_at) ;;
-      }
-    }
-    datagroup_trigger: ecommerce_etl
-  }
+#   derived_table: {
+#     explore_source: order_items {
+#       column: order_id {field: order_items.order_id_no_actions }
+#       column: items_in_order { field: order_items.count }
+#       column: order_amount { field: order_items.total_sale_price }
+#       column: order_cost { field: inventory_items.total_cost }
+#       column: user_id {field: order_items.user_id }
+#       column: created_at {field: order_items.created_raw}
+#       column: order_gross_margin {field: order_items.total_gross_margin}
+#       derived_column: order_sequence_number {
+#         sql: RANK() OVER (PARTITION BY user_id ORDER BY created_at) ;;
+#       }
+#     }
+#     datagroup_trigger: ecommerce_etl
+#   }
 
   dimension: order_id {
     type: number
@@ -45,13 +46,13 @@ view: order_facts {
     value_format_name: usd
   }
 
-  dimension: order_sequence_number {
-    type: number
-    sql: ${TABLE}.order_sequence_number ;;
-  }
+  # dimension: order_sequence_number {
+  #   type: number
+  #   sql: ${TABLE}.order_sequence_number ;;
+  # }
 
-  dimension: is_first_purchase {
-    type: yesno
-    sql: ${order_sequence_number} = 1 ;;
-  }
+  # dimension: is_first_purchase {
+  #   type: yesno
+  #   sql: ${order_sequence_number} = 1 ;;
+  # }
 }

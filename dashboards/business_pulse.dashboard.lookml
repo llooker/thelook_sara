@@ -1,5 +1,5 @@
-- dashboard: business_pulse
-  title: Business Pulse
+- dashboard: business_pulse_gui
+  title: Business Pulse GUI
   layout: newspaper
   preferred_viewer: dashboards
   description: ''
@@ -10,12 +10,6 @@
     title_color: "#3a4245"
     show_filters_bar: true
     tile_text_color: "#3a4245"
-    #tile_separator_color: "#bdb7b7"
-    #tile_border_radius: 2
-    #show_tile_shadow: false
-    # tile_separator_color: "#bdb7b7"
-    # tile_border_radius: 2
-    # show_tile_shadow: false
     text_tile_text_color: "#ffffff"
   elements:
   - title: Number of First Purchasers
@@ -62,7 +56,7 @@
       Country: users.country
     row: 2
     col: 0
-    width: 4
+    width: 6
     height: 4
   - title: Average Order Sale Price
     name: Average Order Sale Price
@@ -70,7 +64,6 @@
     explore: order_items
     type: single_value
     fields: [order_items.average_sale_price]
-    filters: {}
     sorts: [orders.average_profit desc, order_items.average_sale_price desc]
     limit: 500
     column_limit: 50
@@ -144,8 +137,8 @@
       Location: distribution_centers.location
       Country: users.country
     row: 2
-    col: 4
-    width: 4
+    col: 6
+    width: 5
     height: 4
   - title: Orders by Day and Category
     name: Orders by Day and Category
@@ -234,9 +227,7 @@
     model: thelook
     explore: events
     type: looker_column
-    fields: [events.event_day_of_week, events.sessions_count, events.unique_visitors,
-      sessions.overall_conversion]
-    filters: {}
+    fields: [events.event_day_of_week, events.sessions_count, events.unique_visitors]
     sorts: [events.event_day_of_week]
     limit: 500
     column_limit: 50
@@ -467,7 +458,6 @@
     fields: [users.approx_location, users.gender, order_items.order_count, users.count,
       order_items.total_sale_price, order_items.average_spend_per_user, users.country]
     pivots: [users.gender]
-    filters: {}
     sorts: [users.gender 0, order_items.total_sale_price desc 0]
     limit: 500
     column_limit: 50
@@ -545,82 +535,6 @@
     col: 10
     width: 14
     height: 9
-  - title: User Behaviors by Traffic Source
-    name: User Behaviors by Traffic Source
-    model: thelook
-    explore: order_items
-    type: looker_column
-    fields: [users.traffic_source, order_items.average_sale_price, user_order_facts.average_lifetime_orders]
-    filters: {}
-    sorts: [user_order_facts.lifetime_orders_tier__sort_, users.traffic_source]
-    limit: 500
-    column_limit: 50
-    query_timezone: America/Los_Angeles
-    x_axis_gridlines: false
-    y_axis_gridlines: false
-    show_view_names: false
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: false
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
-    limit_displayed_rows: false
-    legend_position: center
-    point_style: circle_outline
-    show_value_labels: true
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
-    y_axes: [{label: '', orientation: left, series: [{id: order_items.average_sale_price,
-            name: Average Sale Price, axisId: order_items.average_sale_price}], showLabels: true,
-        showValues: true, unpinAxis: false, tickDensity: default, type: linear}, {
-        label: !!null '', orientation: right, series: [{id: user_order_facts.average_lifetime_orders,
-            name: Average Lifetime Orders, axisId: user_order_facts.average_lifetime_orders}],
-        showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
-        type: linear}]
-    y_axis_labels: [Average Sale Price ($)]
-    y_axis_value_format: '0'
-    hide_legend: false
-    colors: ["#1ea8df", "#a2dcf3", "#929292", "#9fdee0", "#1f3e5a", "#90c8ae", "#92818d",
-      "#c5c6a6", "#82c2ca", "#cee0a0", "#928fb4", "#9fc190"]
-    font_size: '13'
-    series_colors: {}
-    y_axis_orientation: [left, right]
-    hidden_fields: [percent_repeat_customers]
-    value_labels: legend
-    label_type: labPer
-    show_null_points: true
-    interpolation: linear
-    defaults_version: 1
-    listen:
-      State: users.state
-      City: users.city
-      Traffic Source: users.traffic_source
-      User Gender: users.gender
-      Date: order_items.created_date
-      Location: distribution_centers.location
-      Country: users.country
-    row: 33
-    col: 0
-    width: 10
-    height: 7
   - title: User Basic Demographic Profile
     name: User Basic Demographic Profile
     model: thelook
@@ -628,7 +542,6 @@
     type: looker_donut_multiples
     fields: [users.gender, users.traffic_source, order_items.count]
     pivots: [users.traffic_source]
-    filters: {}
     sorts: [user_order_facts.lifetime_orders_tier__sort_, users.traffic_source, order_items.count
         desc 0]
     limit: 500
@@ -679,65 +592,6 @@
     col: 0
     width: 10
     height: 9
-  - title: 30 Day Repeat Purchase Rate
-    name: 30 Day Repeat Purchase Rate
-    model: thelook
-    explore: order_items
-    type: single_value
-    fields: [order_items.30_day_repeat_purchase_rate]
-    filters: {}
-    sorts: [repeat_purchase_facts.30_day_repeat_purchase_rate desc, order_items.30_day_repeat_purchase_rate
-        desc]
-    limit: 500
-    column_limit: 50
-    query_timezone: America/Los_Angeles
-    custom_color_enabled: true
-    show_single_value_title: true
-    show_comparison: false
-    comparison_type: value
-    comparison_reverse_colors: false
-    show_comparison_label: true
-    enable_conditional_formatting: false
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-    custom_color: ''
-    single_value_title: Repeat Purchase Rate
-    conditional_formatting: [{type: greater than, value: 0.1, background_color: "#ffffe5",
-        font_color: "#FBB555", color_application: {collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7,
-          palette_id: 85de97da-2ded-4dec-9dbd-e6a7d36d5825}, bold: false, italic: false,
-        strikethrough: false, fields: !!null ''}, {type: greater than, value: 0.13,
-        background_color: '', font_color: "#C2DD67", color_application: {collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7,
-          palette_id: 1e4d66b9-f066-4c33-b0b7-cc10b4810688}, bold: false, italic: false,
-        strikethrough: false, fields: !!null ''}, {type: greater than, value: 0.15,
-        background_color: '', font_color: "#72D16D", color_application: {collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7,
-          palette_id: 1e4d66b9-f066-4c33-b0b7-cc10b4810688}, bold: false, italic: false,
-        strikethrough: false, fields: !!null ''}]
-    font_size: medium
-    text_color: black
-    colors: ["#1f78b4", "#a6cee3", "#33a02c", "#b2df8a", "#e31a1c", "#fb9a99", "#ff7f00",
-      "#fdbf6f", "#6a3d9a", "#cab2d6", "#b15928", "#edbc0e"]
-    hidden_fields: []
-    y_axes: []
-    defaults_version: 1
-    note_state: collapsed
-    note_display: hover
-    note_text: What percent of orders are followed by a repeat purchase by the same
-      user within 30 days?
-    listen:
-      State: users.state
-      City: users.city
-      Traffic Source: users.traffic_source
-      User Gender: users.gender
-      Date: order_items.created_date
-      Location: distribution_centers.location
-      Country: users.country
-    row: 2
-    col: 8
-    width: 4
-    height: 4
   - title: Total Order Count
     name: Total Order Count
     model: thelook
@@ -798,8 +652,8 @@
       Location: distribution_centers.location
       Country: users.country
     row: 2
-    col: 12
-    width: 4
+    col: 11
+    width: 5
     height: 4
   - name: "<span class='fa fa-users'> </span> Customer Demographics"
     type: text
@@ -809,86 +663,6 @@
     col: 0
     width: 24
     height: 2
-  - title: Most Viewed Brands Online
-    name: Most Viewed Brands Online
-    model: thelook
-    explore: sessions
-    type: looker_grid
-    fields: [product_viewed.brand, sessions.count, sessions.cart_to_checkout_conversion,
-      product_viewed.department]
-    pivots: [product_viewed.department]
-    filters:
-      product_viewed.brand: "-NULL"
-    sorts: [sessions.count desc 0, product_viewed.department]
-    limit: 10
-    column_limit: 50
-    row_total: right
-    query_timezone: user_timezone
-    show_view_names: false
-    show_row_numbers: false
-    transpose: false
-    truncate_text: true
-    hide_totals: false
-    hide_row_totals: false
-    size_to_fit: true
-    table_theme: gray
-    limit_displayed_rows: false
-    enable_conditional_formatting: false
-    header_text_alignment: left
-    header_font_size: '12'
-    rows_font_size: '12'
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    show_sql_query_menu_options: false
-    show_totals: true
-    show_row_totals: true
-    series_labels:
-      sessions.cart_to_checkout_conversion: Cart Conversion
-    series_cell_visualizations:
-      sessions.count:
-        is_active: true
-        palette:
-          palette_id: google-sequential-0
-          collection_id: google
-    conditional_formatting: [{type: along a scale..., value: !!null '', background_color: "#2196F3",
-        font_color: !!null '', color_application: {collection_id: f14810d2-98d7-42df-82d0-bc185a074e42,
-          palette_id: 493e0f89-1e28-4f9b-9f49-9cb1e77a0331}, bold: false, italic: false,
-        strikethrough: false, fields: !!null ''}]
-    conditional_formatting_ignored_fields: []
-    stacking: ''
-    show_value_labels: false
-    label_density: 25
-    legend_position: center
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    y_axis_combined: true
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: true
-    show_x_axis_ticks: true
-    x_axis_scale: auto
-    ordering: none
-    show_null_labels: false
-    truncate_column_names: true
-    colors: ["#5245ed", "#a2dcf3", "#776fdf", "#1ea8df", "#49cec1", "#776fdf", "#49cec1",
-      "#1ea8df", "#a2dcf3", "#776fdf", "#776fdf", "#635189"]
-    hidden_fields: []
-    y_axes: []
-    series_types: {}
-    defaults_version: 1
-    listen:
-      State: users.state
-      City: users.city
-      Traffic Source: users.traffic_source
-      User Gender: users.gender
-      Date: events.event_date
-      Country: users.country
-    row: 26
-    col: 10
-    width: 14
-    height: 7
   - name: "<span class='fa fa-laptop'> </span> Web Analytics"
     type: text
     title_text: "<span class='fa fa-laptop'> </span> Web Analytics"
@@ -975,6 +749,9 @@
     default_value: ''
     allow_multiple_values: true
     required: false
+    ui_config:
+      type: advanced
+      display: popover
     model: thelook
     explore: order_items
     listens_to_filters: []

@@ -1,4 +1,6 @@
-include: "/views/**/*.view" # include all the views
+include: "**/*.view" # include all the views
+
+#This file contains Quick Start query definitions. Analysts can run these prebuilt queries from the Explore page instead of choosing their own dimensions and measures. See these queries on the (1) Order, Items and User Explore
 
 # Place in `thelook` model
 explore: +order_items {

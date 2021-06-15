@@ -1,11 +1,33 @@
+# The name of this view in Looker is "order_items".
+
 view: order_items {
+   # The sql_table_name parameter indicates the underlying database table to be used for all fields in this view.
   sql_table_name: looker-private-demo.ecomm.order_items ;;
 
-  ########## IDs, Foreign Keys, Counts ###########
 
-  dimension: id {
-    primary_key: yes
+   #PRO TIP: The order of the field definitions within a view doesn't matter.
+  #         Organize fields in a way that makes sense for your organization.
+
+  # Here's what a standard dimension looks like in LookML:
+  dimension: sale_price {
     type: number
+    value_format_name: usd
+    sql: ${TABLE}.sale_price ;;
+  }
+
+
+  # Let's break this down and take a closer look at the LookML for a dimension:
+  # This dimension will be called "id" within Looker
+  dimension: id {
+
+    # This id column is the unique key for this table in the underlying database. You need to identify the primary key in a view to join views in an Explore.
+    primary_key: yes
+
+    # This column is numeric (an integer) in the underlying database table.
+    type: number
+
+    # The underlying column in the products database table is called "id".
+    # The ${TABLE} syntax references the table stated in the sql_table_name parameter.
     sql: ${TABLE}.id ;;
   }
 
@@ -43,16 +65,16 @@ view: order_items {
     sql: ${order_id} ;;
   }
 
-  measure: first_purchase_count {
-    view_label: "Orders"
-    type: count_distinct
-    sql: ${order_id} ;;
-    filters: {
-      field: order_facts.is_first_purchase
-      value: "Yes"
-    }
-    drill_fields: [user_id, users.name, users.email, order_id, created_date, users.traffic_source]
-  }
+  # measure: first_purchase_count {
+  #   view_label: "Orders"
+  #   type: count_distinct
+  #   sql: ${order_id} ;;
+  #   filters: {
+  #     field: order_facts.is_first_purchase
+  #     value: "Yes"
+  #   }
+  #   drill_fields: [user_id, users.name, users.email, order_id, created_date, users.traffic_source]
+  # }
 
   dimension: order_id_no_actions {
     type: number
@@ -239,11 +261,7 @@ view: order_items {
 
 ########## Financial Information ##########
 
-  dimension: sale_price {
-    type: number
-    value_format_name: usd
-    sql: ${TABLE}.sale_price ;;
-  }
+
 
   dimension: gross_margin {
     type: number
@@ -348,42 +366,42 @@ view: order_items {
 
 ########## Repeat Purchase Facts ##########
 
-  dimension: days_until_next_order {
-    type: number
-    view_label: "Repeat Purchase Facts"
-    sql: TIMESTAMP_DIFF(${created_raw},${repeat_purchase_facts.next_order_raw}, DAY) ;;
-  }
+  # dimension: days_until_next_order {
+  #   type: number
+  #   view_label: "Repeat Purchase Facts"
+  #   sql: TIMESTAMP_DIFF(${created_raw},${repeat_purchase_facts.next_order_raw}, DAY) ;;
+  # }
 
-  dimension: repeat_orders_within_30d {
-    type: yesno
-    view_label: "Repeat Purchase Facts"
-    sql: ${days_until_next_order} <= 30 ;;
-  }
+  # dimension: repeat_orders_within_30d {
+  #   type: yesno
+  #   view_label: "Repeat Purchase Facts"
+  #   sql: ${days_until_next_order} <= 30 ;;
+  # }
 
-  dimension: repeat_orders_within_15d{
-    type: yesno
-    sql:  ${days_until_next_order} <= 15;;
-  }
+  # dimension: repeat_orders_within_15d{
+  #   type: yesno
+  #   sql:  ${days_until_next_order} <= 15;;
+  # }
 
-  measure: count_with_repeat_purchase_within_30d {
-    type: count_distinct
-    sql: ${id} ;;
-    view_label: "Repeat Purchase Facts"
+  # measure: count_with_repeat_purchase_within_30d {
+  #   type: count_distinct
+  #   sql: ${id} ;;
+  #   view_label: "Repeat Purchase Facts"
 
-    filters: {
-      field: repeat_orders_within_30d
-      value: "Yes"
-    }
-  }
+  #   filters: {
+  #     field: repeat_orders_within_30d
+  #     value: "Yes"
+  #   }
+  # }
 
-  measure: 30_day_repeat_purchase_rate {
-    description: "The percentage of customers who purchase again within 30 days"
-    view_label: "Repeat Purchase Facts"
-    type: number
-    value_format_name: percent_1
-    sql: 1.0 * ${count_with_repeat_purchase_within_30d} / (CASE WHEN ${count} = 0 THEN NULL ELSE ${count} END) ;;
-    drill_fields: [products.brand, order_count, count_with_repeat_purchase_within_30d]
-  }
+  # measure: 30_day_repeat_purchase_rate {
+  #   description: "The percentage of customers who purchase again within 30 days"
+  #   view_label: "Repeat Purchase Facts"
+  #   type: number
+  #   value_format_name: percent_1
+  #   sql: 1.0 * ${count_with_repeat_purchase_within_30d} / (CASE WHEN ${count} = 0 THEN NULL ELSE ${count} END) ;;
+  #   drill_fields: [products.brand, order_count, count_with_repeat_purchase_within_30d]
+  # }
 
 ########## Dynamic Sales Cohort App ##########
 
