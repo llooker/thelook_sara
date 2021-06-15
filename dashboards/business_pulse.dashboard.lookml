@@ -1,5 +1,5 @@
 - dashboard: business_pulse_gui
-  title: Business Pulse GUI
+  title: Business Pulse
   layout: newspaper
   preferred_viewer: dashboards
   description: ''
