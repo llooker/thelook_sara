@@ -5,7 +5,7 @@ view: order_items {
   sql_table_name: looker-private-demo.ecomm.order_items ;;
 
 
-   #PRO TIP: The order of the field definitions within a view doesn't matter.
+  #PRO TIP: The order of the field definitions within a view doesn't matter.
   #         Organize fields in a way that makes sense for your organization.
 
   # Here's what a standard dimension looks like in LookML:
@@ -33,6 +33,7 @@ view: order_items {
 
   dimension: inventory_item_id {
     type: number
+    # Hiding fields is useful if you don't want them to show up in the Explore UI.
     hidden: yes
     sql: ${TABLE}.inventory_item_id ;;
   }
@@ -43,10 +44,21 @@ view: order_items {
     sql: ${TABLE}.user_id ;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [detail*]
+ #PRO TIP: Use the Quick Help panel on the left to learn about the LookML syntax.
+
+######## Measures: ########
+
+ #   A measure is a summary or aggregate computation.
+ #   Similar to the COUNT_DISTINCT function in SQL, you can use a measure of type: count distinct
+ #   to count the distinct values in a field.
+
+  measure: order_count {
+    view_label: "Orders"
+    #Click on type to see all the measures types you can use in the Quick Help panel
+    type: count_distinct
+    sql: ${order_id} ;;
   }
+
 
   measure: count_last_28d {
     label: "Count Sold in Trailing 28 Days"
@@ -58,23 +70,9 @@ view: order_items {
       value: "28 days"
     }}
 
-  measure: order_count {
-    view_label: "Orders"
-    type: count_distinct
-    drill_fields: [detail*]
-    sql: ${order_id} ;;
+  measure: count {
+    type: count
   }
-
-  # measure: first_purchase_count {
-  #   view_label: "Orders"
-  #   type: count_distinct
-  #   sql: ${order_id} ;;
-  #   filters: {
-  #     field: order_facts.is_first_purchase
-  #     value: "Yes"
-  #   }
-  #   drill_fields: [user_id, users.name, users.email, order_id, created_date, users.traffic_source]
-  # }
 
   dimension: order_id_no_actions {
     type: number
@@ -85,87 +83,7 @@ view: order_items {
   dimension: order_id {
     type: number
     sql: ${TABLE}.order_id ;;
-    action: {
-      label: "Send this to slack channel"
-      url: "https://hooks.zapier.com/hooks/catch/1662138/tvc3zj/"
-      param: {
-        name: "user_dash_link"
-        value: "/dashboards/ayalascustomerlookupdb?Email={{ users.email._value}}"
-      }
-      form_param: {
-        name: "Message"
-        type: textarea
-        default: "Hey,
-        Could you check out order #{{value}}. It's saying its {{status._value}},
-        but the customer is reaching out to us about it.
-        ~{{ _user_attributes.first_name}}"
-      }
-      form_param: {
-        name: "Recipient"
-        type: select
-        default: "zevl"
-        option: {
-          name: "zevl"
-          label: "Zev"
-        }
-        option: {
-          name: "slackdemo"
-          label: "Slack Demo User"
-        }
-      }
-      form_param: {
-        name: "Channel"
-        type: select
-        default: "cs"
-        option: {
-          name: "cs"
-          label: "Customer Support"
-        }
-        option: {
-          name: "general"
-          label: "General"
-        }
-      }
-    }
-    action: {
-      label: "Create Order Form"
-      url: "https://hooks.zapier.com/hooks/catch/2813548/oosxkej/"
-      form_param: {
-        name: "Order ID"
-        type: string
-        default: "{{ order_id._value }}"
-      }
 
-      form_param: {
-        name: "Name"
-        type: string
-        default: "{{ users.name._value }}"
-      }
-
-      form_param: {
-        name: "Email"
-        type: string
-        default: "{{ _user_attributes.email }}"
-      }
-
-      form_param: {
-        name: "Item"
-        type: string
-        default: "{{ products.item_name._value }}"
-      }
-
-      form_param: {
-        name: "Price"
-        type: string
-        default: "{{ order_items.sale_price._rendered_value }}"
-      }
-
-      form_param: {
-        name: "Comments"
-        type: string
-        default: " Hi {{ users.first_name._value }}, thanks for your business!"
-      }
-    }
   }
 
   ########## Time Dimensions ##########
@@ -260,7 +178,6 @@ view: order_items {
   }
 
 ########## Financial Information ##########
-
 
 
   dimension: gross_margin {
@@ -364,99 +281,6 @@ view: order_items {
   }
 
 
-########## Repeat Purchase Facts ##########
-
-  # dimension: days_until_next_order {
-  #   type: number
-  #   view_label: "Repeat Purchase Facts"
-  #   sql: TIMESTAMP_DIFF(${created_raw},${repeat_purchase_facts.next_order_raw}, DAY) ;;
-  # }
-
-  # dimension: repeat_orders_within_30d {
-  #   type: yesno
-  #   view_label: "Repeat Purchase Facts"
-  #   sql: ${days_until_next_order} <= 30 ;;
-  # }
-
-  # dimension: repeat_orders_within_15d{
-  #   type: yesno
-  #   sql:  ${days_until_next_order} <= 15;;
-  # }
-
-  # measure: count_with_repeat_purchase_within_30d {
-  #   type: count_distinct
-  #   sql: ${id} ;;
-  #   view_label: "Repeat Purchase Facts"
-
-  #   filters: {
-  #     field: repeat_orders_within_30d
-  #     value: "Yes"
-  #   }
-  # }
-
-  # measure: 30_day_repeat_purchase_rate {
-  #   description: "The percentage of customers who purchase again within 30 days"
-  #   view_label: "Repeat Purchase Facts"
-  #   type: number
-  #   value_format_name: percent_1
-  #   sql: 1.0 * ${count_with_repeat_purchase_within_30d} / (CASE WHEN ${count} = 0 THEN NULL ELSE ${count} END) ;;
-  #   drill_fields: [products.brand, order_count, count_with_repeat_purchase_within_30d]
-  # }
-
-########## Dynamic Sales Cohort App ##########
-
-#   filter: cohort_by {
-#     type: string
-#     hidden: yes
-#     suggestions: ["Week", "Month", "Quarter", "Year"]
-#   }
-#
-#   filter: metric {
-#     type: string
-#     hidden: yes
-#     suggestions: ["Order Count", "Gross Margin", "Total Sales", "Unique Users"]
-#   }
-#
-#   dimension_group: first_order_period {
-#     type: time
-#     timeframes: [date]
-#     hidden: yes
-#     sql: CAST(DATE_TRUNC({% parameter cohort_by %}, ${user_order_facts.first_order_date}) AS TIMESTAMP)
-#       ;;
-#   }
-#
-#   dimension: periods_as_customer {
-#     type: number
-#     hidden: yes
-#     sql: TIMESTAMP_DIFF(${user_order_facts.first_order_date}, ${user_order_facts.latest_order_date}, {% parameter cohort_by %})
-#       ;;
-#   }
-#
-#   measure: cohort_values_0 {
-#     type: count_distinct
-#     hidden: yes
-#     sql: CASE WHEN {% parameter metric %} = 'Order Count' THEN ${id}
-#         WHEN {% parameter metric %} = 'Unique Users' THEN ${users.id}
-#         ELSE null
-#       END
-#        ;;
-#   }
-#
-#   measure: cohort_values_1 {
-#     type: sum
-#     hidden: yes
-#     sql: CASE WHEN {% parameter metric %} = 'Gross Margin' THEN ${gross_margin}
-#         WHEN {% parameter metric %} = 'Total Sales' THEN ${sale_price}
-#         ELSE 0
-#       END
-#        ;;
-#   }
-#
-#   measure: values {
-#     type: number
-#     hidden: yes
-#     sql: ${cohort_values_0} + ${cohort_values_1} ;;
-#   }
 
 ########## Sets ##########
 

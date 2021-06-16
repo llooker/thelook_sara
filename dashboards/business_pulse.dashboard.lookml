@@ -1,4 +1,4 @@
-- dashboard: business_pulse_gui
+- dashboard: business_pulse
   title: Business Pulse
   layout: newspaper
   preferred_viewer: dashboards

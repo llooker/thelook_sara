@@ -23,17 +23,3 @@ view: +user_order_facts {
 
 
 }
-
-# view: +order_items {
-
-
-
-# }
-
-
-
-# dimension: repeat_customer {
-#   description: "Lifetime Count of Orders > 1"
-#   type: yesno
-#   sql: ${lifetime_orders} > 1 ;;
-# }

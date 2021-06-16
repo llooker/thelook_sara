@@ -16,17 +16,43 @@ datagroup: ecommerce_etl {
 
 persist_with: ecommerce_etl
 
-#This Explore is called “(1) Orders, Items and Users” and joins many views to the order_items view which allows Analyst users to explore data from all these tables at the same time. To see this Explore UI, go to Explore > (1) Orders, Items and Users
+
+########  Explores: ########
+
+# Explores allow you to join together different views (database tables) based on
+# relationships between fields. By adding a view into an Explore, you make those
+# fields available to users for data analysis.
+# Explores should be purpose-built based on use cases.
+
+# For example, to make the order_items view available to users,
+# we define the following Explore:
 
 explore: order_items {
+  #This Explore is called “(1) Orders, Items and Users”
   label: "(1) Orders, Items and Users"
   view_name: order_items
+
+# Let's talk about joining.  To create more sophisticated that involve multiple
+# views, you can use the join parameter. Typically, join parameters require that
+# you define the join type, a sql_on clause , and the view relationship.
+
+# For example, the order_items Explore below joins together order_items, users, and
+# many more views to provide users insight into sales and company performance.
+
+# The join criteria is inserted by defining the type, sql_on, and relationship parameters.
+
+  join: users {
+    type: left_outer  # The type here is a left outer join.
+    sql_on: ${order_items.user_id} = ${users.id} ;; # Specifies the common field between the views
+    relationship: many_to_one  # A user can can have many ordered items, so the relationship
+    # between order_items and users is many_to_one.
+  }
 
   join: order_facts {
     type: left_outer
     view_label: "Orders"
-    relationship: many_to_one
     sql_on: ${order_facts.order_id} = ${order_items.order_id} ;;
+    relationship: many_to_one
   }
 
   join: inventory_items {
@@ -34,12 +60,6 @@ explore: order_items {
     type: full_outer
     relationship: one_to_one
     sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
-  }
-
-  join: users {
-    type: left_outer
-    relationship: many_to_one
-    sql_on: ${order_items.user_id} = ${users.id} ;;
   }
 
   join: user_order_facts {
@@ -55,17 +75,12 @@ explore: order_items {
     sql_on: ${products.id} = ${inventory_items.product_id} ;;
   }
 
-  join: repeat_purchase_facts {
-    relationship: many_to_one
-    type: full_outer
-    sql_on: ${order_items.order_id} = ${repeat_purchase_facts.order_id} ;;
-  }
-
   join: distribution_centers {
     type: left_outer
     sql_on: ${distribution_centers.id} = ${inventory_items.product_distribution_center_id} ;;
     relationship: many_to_one
   }
+
 }
 
 
